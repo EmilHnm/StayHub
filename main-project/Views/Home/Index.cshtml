@@ -1,0 +1,232 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var types = ViewData["accommodationTypes"] as ICollection<AccommodationType> ?? new List<AccommodationType>();
+}
+<div class="flex flex-col justify-center w-full mb-20 md:h-screen">
+    <h1
+        class="text-3xl font-bold leading-10 tracking-tight text-left text-purple-500 md:text-center sm:text-4xl md:text-7xl lg:text-8xl">
+        Your Home, Our Priority</h1>
+    <div class="md:mx-auto mt-5 text-gray-400 md:mt-8 md:max-w-lg md:text-center md:text-xl">Connecting Hosts and
+        Renters
+        Seamlessly.</div>
+    <div
+        class="flex flex-col items-center justify-center mt-8 space-y-4 text-center sm:flex-row sm:space-y-0 sm:space-x-4">
+        <span class="relative inline-flex w-full md:w-auto">
+            <a href="#_"
+                class="inline-flex items-center justify-center  w-content py-2 px-4 md:px-8 md:py-4 text-base font-medium leading-6 text-white bg-black border border-transparent rounded-full xl:px-10 md:w-auto hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-800">
+                Xem thêm
+            </a>
+        </span>
+    </div>
+</div>
+
+<div class="relative rounded-xl shadow-md shadow-purple-700 px-10 py-6 mb-20 mx-auto">
+    <h2
+        class="text-md sm:text-xl md:text-2xl absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 text-center font-bold text-purple-700">
+        Tìm Kiếm Nhà Trọ Lí Tưởng của Bạn</h2>
+    <form method="get" asp-action="Index" asp-controller="Hostel"
+        class="flex flex-col md:flex-row items-center gap-3 md:gap-10 ">
+        <div class="w-full flex-1">
+            <label for="" class="font-bold text-lg text-purple-600">Từ khóa</label>
+            <input type="text" placeholder="Nhập từ khóa" name="query"
+                class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        </div>
+        <div class="w-full flex-1">
+            <label class="font-bold text-lg text-purple-600">Loại nhà trọ</label>
+            <div x-data="select([
+                @foreach (var type in types)
+                {
+                    @:{ title: '@type.Name', value: '@type.Id', disabled: false },
+                }
+            ], 0)"  x-on:keydown.escape="if(selectOpen){ selectOpen=false; }"
+                x-on:keydown.down="if(selectOpen){ selectableItemActiveNext(); } else { selectOpen=true; } event.preventDefault();"
+                x-on:keydown.up="if(selectOpen){ selectableItemActivePrevious(); } else { selectOpen=true; } event.preventDefault();"
+                x-on:keydown.enter="selectedItem=selectableItemActive; selectOpen=false;"
+                x-on:keydown="selectKeydown($event);" class="relative w-full flex-1">
+                <button x-ref="selectButton" x-on:click="selectOpen=!selectOpen" type="button"
+                    :class="{ 'focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400' : !selectOpen }"
+                    class="relative min-h-[38px] flex items-center justify-between w-full py-2 pl-3 pr-10 text-left bg-white border rounded-md shadow-sm cursor-default border-neutral-200/70 focus:outline-none  text-sm">
+                    <span x-text="selectedItem ? selectedItem.title : 'Select Item'" class="truncate">Select Item</span>
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            aria-hidden="true" class="w-5 h-5 text-gray-400">
+                            <path fill-rule="evenodd"
+                                d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                </button>
+
+                <input type="hidden" name="type" :value="selectedItem ? selectedItem.value : null">
+                <template x-if="selectableItems.length">
+                    <ul x-show="selectOpen"  x-ref="selectableItemsList" x-on:click.away="selectOpen = false"
+                        x-transition:enter="transition ease-out duration-50"
+                        x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100"
+                        :class="{ 'bottom-0 mb-10' : selectDropdownPosition == 'top', 'top-0 mt-10' : selectDropdownPosition == 'bottom' }"
+                        class="absolute w-full py-1 mt-1 overflow-auto text-sm bg-white rounded-md shadow-md max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        x-cloak>
+
+                        <template x-for="(item, index) in selectableItems" :key="index"  >
+                            <li x-on:click="selectedItem=item; selectOpen=false; $refs.selectButton.focus();"
+                                :id="item.value + '-' + selectId" :data-disabled="item.disabled"
+                                :class="{ 'bg-neutral-100 text-gray-900' : selectableItemIsActive(item), '' : !selectableItemIsActive(item) }"
+                                x-on:mousemove="selectableItemActive=item"
+                                class="relative flex items-center h-full py-2 pl-8 text-gray-700 cursor-pointer select-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none">
+                                <svg x-show="selectedItem.value==item.value"
+                                    class="absolute left-0 w-4 h-4 ml-2 stroke-current text-neutral-400"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span class="block font-medium truncate" x-html="item.title"></span>
+                            </li>
+                        </template>
+                    </ul>
+                </template>
+            </div>
+        </div>
+        <div class="">
+            <button type="submit"
+                class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium tracking-wide mt-4 text-white transition-colors duration-200 rounded-md bg-purple-950 hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 focus:shadow-outline focus:outline-none">
+                Tìm kiếm
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="w-full mb-20">
+    <h2 class="text-4xl text-center font-bold text-purple-700 mb-10">Các loại nhà trọ</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+        @foreach (var type in types)
+        {
+            <a href="/Hostel?type=@type.Id"
+                class="group flex flex-col items-center justify-center p-4 aspect-video border-2 border-dashed rounded-md border-purple-700 cursor-pointer hover:bg-purple-700 hover:bg-opacity-60 duration-100">
+                <h3 class="text-2xl font-bold text-gray-900 group-hover:text-white">@type.Name</h3>
+                <p class="text-purple-700 group-hover:text-white">@(type.Hotels?.Count ?? 0) nhà trọ</p>
+            </a>
+        }
+    </div>
+</div>
+
+<div class="w-full mb-20">
+    <h2 class="text-4xl text-center font-bold text-purple-700 mb-10">Phòng trọ mới nhất</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 justify-items-center">
+        @{
+            var latestHostels = ViewData["latestHostels"] as ICollection<Hostel> ?? new List<Hostel>();
+        }
+        @foreach (var hostel in latestHostels)
+        {
+            <div
+                class="rounded-lg overflow-hidden border border-neutral-200/60 bg-white text-neutral-700 shadow-sm w-[380px]">
+                <div class="relative">
+                    <img src='@(hostel.HostelImages?.Count() > 0 ? hostel.HostelImages.First().ImageUrl : "https://nhatro.duytan.edu.vn/Content/Home/images/image_logo.jpg")'
+                        class="w-full max-h-40 min-h-40 object-contain" />
+                </div>
+                <div class="p-7">
+                    <h3
+                        class="mb-2 text-xl font-bold leading-none tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                        @hostel.Name</h3>
+                    <p class="mb-2 text-neutral-500">@hostel.Address</p>
+                    <p class="mb-5 text-lg font-bold text-purple-500">@(String.Format("{0:#,##0.##}", @hostel.Fee)) VNĐ</p>
+                    <a asp-area="" asp-controller="Hostel" asp-action="Details" asp-route-id="@hostel.Id"
+                        class="inline-flex items-center justify-center w-full h-10 px-4 py-2 text-sm font-medium text-white transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-neutral-950 hover:bg-neutral-950/90 cursor-pointer">Xem
+                        Chi tiết</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts_Before {
+    <script>
+        const data = {
+            selectOpen: false,
+            selectedItem: '',
+            selectableItems: [
+        @foreach (var type in types)
+        {
+            
+            @:{ title: '@type.Name', value: '@type.Id', disabled: false },
+        }
+                                                ],
+            selectableItemActive: null,
+            selectId: @types.First()?.Id ?? "0",
+            selectKeydownValue: '',
+            selectKeydownTimeout: 1000,
+            selectKeydownClearTimeout: null,
+            selectDropdownPosition: 'bottom',
+            selectableItemIsActive(item) {
+                return this.selectableItemActive && this.selectableItemActive.value == item.value;
+            },
+            selectableItemActiveNext() {
+                let index = this.selectableItems.indexOf(this.selectableItemActive);
+                if (index < this.selectableItems.length - 1) {
+                    this.selectableItemActive = this.selectableItems[index + 1];
+                    this.selectScrollToActiveItem();
+                }
+            },
+            selectableItemActivePrevious() {
+                let index = this.selectableItems.indexOf(this.selectableItemActive);
+                if (index > 0) {
+                    this.selectableItemActive = this.selectableItems[index - 1];
+                    this.selectScrollToActiveItem();
+                }
+            },
+            selectScrollToActiveItem() {
+                if (this.selectableItemActive) {https://nhatro.duytan.edu.vn/Content/Home/images/image_logo.jpg
+                    activeElement = document.getElementById(this.selectableItemActive.value + '-' + this.selectId)
+                    newScrollPos = (activeElement.offsetTop + activeElement.offsetHeight) - this.$refs.selectableItemsList.offsetHeight;
+                    if (newScrollPos > 0) {
+                        this.$refs.selectableItemsList.scrollTop = newScrollPos;
+                    } else {
+                        this.$refs.selectableItemsList.scrollTop = 0;
+                    }
+                }
+            },
+            selectKeydown(event) {
+                if (event.keyCode >= 65 && event.keyCode <= 90) {
+
+                    this.selectKeydownValue += event.key;
+                    selectedItemBestMatch = this.selectItemsFindBestMatch();
+                    if (selectedItemBestMatch) {
+                        if (this.selectOpen) {
+                            this.selectableItemActive = selectedItemBestMatch;
+                            this.selectScrollToActiveItem();
+                        } else {
+                            this.selectedItem = this.selectableItemActive = selectedItemBestMatch;
+                        }
+                    }
+
+                    if (this.selectKeydownValue != '') {
+                        clearTimeout(this.selectKeydownClearTimeout);
+                        this.selectKeydownClearTimeout = setTimeout(() => {
+                            this.selectKeydownValue = '';
+                        }, this.selectKeydownTimeout);
+                    }
+                }
+            },
+            selectItemsFindBestMatch() {
+                typedValue = this.selectKeydownValue.toLowerCase();
+                var bestMatch = null;
+                var bestMatchIndex = -1;
+                for (var i = 0; i < this.selectableItems.length; i++) {
+                    var title = this.selectableItems[i].title.toLowerCase();
+                    var index = title.indexOf(typedValue);
+                    if (index > -1 && (bestMatchIndex == -1 || index < bestMatchIndex) && !this.selectableItems[i].disabled) {
+                        bestMatch = this.selectableItems[i];
+                        bestMatchIndex = index;
+                    }
+                }
+                return bestMatch;
+            },
+            selectPositionUpdate() {
+                selectDropdownBottomPos = this.$refs.selectButton.getBoundingClientRect().top + this.$refs.selectButton.offsetHeight + parseInt(window.getComputedStyle(this.$refs.selectableItemsList).maxHeight);
+                if (window.innerHeight < selectDropdownBottomPos) {
+                    this.selectDropdownPosition = 'top';
+                } else {
+                    this.selectDropdownPosition = 'bottom';
+                }
+            }
+        }
+    </script>
+}

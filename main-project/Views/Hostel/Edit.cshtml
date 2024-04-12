@@ -1,0 +1,282 @@
+@{
+    ViewData["Title"] = "Sửa thông tin nhà trọ";
+    var types = ViewData["accommodationTypes"] as ICollection<AccommodationType> ?? new List<AccommodationType>();
+    var utilities = ViewData["utilities"] as ICollection<Utility> ?? new List<Utility>();
+    var hostProfile = ViewData["hostProfile"] as HostProfile;
+    @model main_project.Models.ViewModels.VM_HostelForm; 
+}
+
+<h1 class="text-4xl font-extrabold text-center my-16">@ViewData["Title"]</h1>
+
+<form method="post" asp-area="" asp-action="Update" asp-controller="Hostel" enctype="multipart/form-data" class="flex flex-col md:flex-row gap-3">
+    <div x-data="fileInput" class="relative flex flex-col gap-2 w-full md:w-1/3 border-2 border-purple-500 rounded-md p-2">
+        <div class="relative max-h-24 min-h-24 w-full border border-purple-500 rounded-md cursor-pointer">
+            <input x-on:change="inputOnchange($event)" type="file" name="ImageFiles" multiple="multiple" x-ref="ImageFiles" class="absolute top-0 left-0 z-10 w-full h-full cursor-pointer opacity-0">
+            <div class="absolute w-full h-full top-0 left-0 flex justify-center items-center p-2 -z-10">
+                <span class="text-lg font-bold text-purple-500 text-center">Click or drop your image here to add image</span>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 justify-items-center items-center">
+            <template x-for="(file, index) in oldFiles">
+                <div class="relative aspect-square w-full h-auto overflow-hidden border border-purple-500 rounded-md">
+                    <button
+                        type="button"
+                        class="absolute top-2 right-2 w-3 h-3 md:w-5 md:h-5 bg-white text-black rounded-full flex items-center justify-center"
+                        x-on:click="removeOldImage(index)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                     <input type="text" name="ImageFileURLs[]" :value="file.url" class="hidden">
+                    <img :src="file.url" alt="" class="w-full h-full object-contain">
+                </div>
+            </template>
+            <template x-for="(file, index) in files">
+                <div class="relative aspect-square w-full h-auto overflow-hidden border border-purple-500 rounded-md">
+                    <button
+                        type="button"
+                        class="absolute top-2 right-2 w-3 h-3 md:w-5 md:h-5 bg-white text-black rounded-full flex items-center justify-center"
+                        x-on:click="removeImage(index)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                    <img :src="file.url" alt="" class="w-full h-full object-contain">
+                </div>
+            </template>
+        </div>
+    </div>
+    <div class="flex flex-col gap-3 flex-1 ">
+        @if(hostProfile != null) {
+            <div class="border-2 border-purple-500 rounded-md p-2">
+                <div class="flex">
+                    <h2 class="flex-1 text-lg font-bold flex items-center">Thông tin chủ trọ</h2>
+                    <a asp-area="" asp-action="Index" asp-controller="Account"
+                        class="flex items-center justify-center cursor-pointer px-4 py-2 text-md font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-purple-950 hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-purple-900 focus:shadow-outline focus:outline-none">
+                        Chỉnh sửa
+                    </a>
+                </div>
+                <div class="">
+                    <div class="">
+                        <span class="text-md">Tên chủ trọ: </span>
+                        <span class="font-bold text-lg">@hostProfile.FullName</span>
+                    </div>
+                    <div class="">
+                        <span class="text-md">Số điện thoại: </span>
+                        <span class="font-bold text-lg">@hostProfile.Phone</span>
+                    </div> 
+                    <div class="">
+                        <span class="text-md">Email: </span>
+                        <span class="font-bold text-lg">@hostProfile.User?.Email</span>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="flex flex-col gap-3">
+            <h2 class="text-lg font-bold text-center">Thông tin nhà trọ</h2>
+            <input type="text" class="hidden" name="Id" value="@Model?.Id" >
+            <div class="w-full flex-1">
+                <label for="" class="font-bold text-lg text-purple-600">Tên nhà trọ</label>
+                <input type="text" placeholder="Nhập tên" name="Name" value='@Model?.Name'
+                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                <span class="text-sm text-red-500" asp-validation-for="Name"></span>
+            </div>
+            <div class="w-full flex-1">
+                <label for="" class="font-bold text-lg text-purple-600">Địa chỉ nhà trọ</label>
+                <input type="text" placeholder="Nhập địa chỉ" name="Address" value='@Model?.Address'
+                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                <span class="text-sm text-red-500" asp-validation-for="Address"></span>
+            </div>
+            <div class="w-full flex-1">
+                <label for="" class="font-bold text-lg text-purple-600">Mô tả</label>
+                <textarea type="text" placeholder="Nhập mô tả chi tiết" 
+                name="Description" rows="8" class="flex w-full h-auto min-h-[80px] px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50">@Model?.Description</textarea>
+                <span class="text-sm text-red-500" asp-validation-for="Description"></span>
+            </div>
+            <div class="flex gap-3 flex-col md:flex-row">
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Số phòng</label>
+                    <input type="number" placeholder="Nhập số phòng" name="Rooms" value='@Model?.Rooms'
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                    <span class="text-sm text-red-500" asp-validation-for="Rooms"></span>
+
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Giá tiền / tháng</label>
+                    <input type="number" placeholder="Nhập số phòng" name="Fee" value='@Model?.Fee'
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                    <span class="text-sm text-red-500" asp-validation-for="Fee"></span>
+                </div>
+
+                <div class="w-full flex-1">
+                    <label class="font-bold text-lg text-purple-600">Loại nhà trọ</label>
+                    <div x-data="select([
+                        @foreach (var type in types)
+                        {
+                            @:{ title: '@type.Name', value: '@type.Id', disabled: false },
+                        }
+                    ], @(Model?.AccommodationTypeId ?? 0))" x-on:keydown.escape="if(selectOpen){ selectOpen=false; }"
+                        x-on:keydown.down="if(selectOpen){ selectableItemActiveNext(); } else { selectOpen=true; } event.preventDefault();"
+                        x-on:keydown.up="if(selectOpen){ selectableItemActivePrevious(); } else { selectOpen=true; } event.preventDefault();"
+                        x-on:keydown.enter="selectedItem=selectableItemActive; selectOpen=false;"
+                        x-on:keydown="selectKeydown($event);" class="relative w-full flex-1">
+                        <button x-ref="selectButton" x-on:click="selectOpen=!selectOpen" type="button"
+                            :class="{ 'focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400' : !selectOpen }"
+                            class="relative min-h-[38px] flex items-center justify-between w-full py-2 pl-3 pr-10 text-left bg-white border rounded-md shadow-sm cursor-default border-neutral-200/70 focus:outline-none  text-sm">
+                            <span x-text="selectedItem ? selectedItem.title : 'Select Item'" class="truncate">Select Item</span>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    aria-hidden="true" class="w-5 h-5 text-gray-400">
+                                    <path fill-rule="evenodd"
+                                        d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </span>
+                        </button>
+
+                        <input type="hidden" name="AccommodationTypeId" :value="selectedItem ? selectedItem.value : null">
+                        <template x-if="selectableItems.length">
+                            <ul x-show="selectOpen" x-ref="selectableItemsList" x-on:click.away="selectOpen = false"
+                                x-transition:enter="transition ease-out duration-50"
+                                x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100"
+                                :class="{ 'bottom-0 mb-10' : selectDropdownPosition == 'top', 'top-0 mt-10' : selectDropdownPosition == 'bottom' }"
+                                class="absolute w-full py-1 mt-1 overflow-auto text-sm bg-white rounded-md shadow-md max-h-56 ring-1 ring-black ring-opacity-5 z-10 focus:outline-none"
+                                x-cloak>
+
+                                <template x-for="(item, index) in selectableItems" :key="index">
+                                    <li x-on:click="selectedItem=item; selectOpen=false; $refs.selectButton.focus();"
+                                        :id="item.value + '-' + selectId" :data-disabled="item.disabled"
+                                        :class="{ 'bg-neutral-100 text-gray-900' : selectableItemIsActive(item), '' : !selectableItemIsActive(item) }"
+                                        x-on:mousemove="selectableItemActive=item"
+                                        class="relative flex items-center h-full py-2 pl-8 text-gray-700 cursor-pointer select-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none">
+                                        <svg x-show="selectedItem.value==item.value"
+                                            class="absolute left-0 w-4 h-4 ml-2 stroke-current text-neutral-400"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span class="block font-medium truncate" x-html="item.title"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                    </div>
+                    <span class="text-sm text-red-500" asp-validation-for="AccommodationTypeId"></span>
+                </div>
+            </div>
+            <div class="w-full flex-1">
+                <label for="" class="font-bold text-lg text-purple-600">Trạng thái</label>
+                <div class="flex justify-start gap-2">
+                        <div class="mb-[0.125rem] block min-h-[1.5rem] ps-[1.5rem]">
+                            <input
+                                class="relative float-left -ms-[1.5rem] me-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-secondary-500 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-checkbox before:shadow-transparent 
+                                    before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-purple-500 checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-purple-500 checked:after:bg-purple-500 checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-black/60 focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-black/60 focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-purple-500 checked:focus:before:scale-100 checked:focus:before:shadow-checkbox checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] rtl:float-right dark:border-neutral-400 dark:checked:border-purple-500"
+                                type="radio" name="Status" id="status-active" value="active" @(Model?.Status == "active" ? "checked" : "") />
+                            <label class="mt-px inline-block ps-[0.15rem] hover:cursor-pointer" for="status-active">
+                                Còn phòng
+                            </label>
+                        </div>
+                        <div class="mb-[0.125rem] block min-h-[1.5rem] ps-[1.5rem]">
+                            <input
+                                class="relative float-left -ms-[1.5rem] me-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-secondary-500 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-checkbox before:shadow-transparent before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-purple-500 checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-purple-500 checked:after:bg-purple-500 checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-black/60 focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-black/60 focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-purple-500 checked:focus:before:scale-100 checked:focus:before:shadow-checkbox checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] rtl:float-right dark:border-neutral-400 dark:checked:border-purple-500"
+                                type="radio" name="Status" id="status-inactive" value="inactive" @(Model?.Status == "inactive" ? "checked" : "") />
+                            <label class="mt-px inline-block ps-[0.15rem] hover:cursor-pointer" for="status-inactive">
+                                Hết phòng
+                            </label>
+                        </div>
+                    </div>
+                <span class="text-sm text-red-500" asp-validation-for="Status"></span>
+            </div>
+            <div x-data="{ 
+                activeAccordion: 'utilities', 
+                setActiveAccordion(id) { 
+                    this.activeAccordion = (this.activeAccordion == id) ? '' : id 
+                } 
+            }"
+                class="relative w-full mx-auto overflow-hidden text-sm font-normal bg-white border border-gray-200 divide-y divide-gray-200 rounded-md">
+                <div x-data="{ id: $id('utilities') }" class="cursor-pointer group">
+                    <button type="button" x-on:click="setActiveAccordion(id)"
+                        class="flex items-center justify-between w-full p-2 py-3 text-left select-none text-purple-700 font-bold">
+                        <span>Add Utilities</span>
+                        <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div x-show="activeAccordion==id" x-collapse x-cloak>
+                        <div class="p-4 pt-0">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                @foreach (var utility in utilities)
+                                {
+                                    <div class="flex items-center h-5 ">
+                                        <input name="Utilities" id='@("Utilities-" + utility.Id)' type="checkbox" value="@utility.Id"
+                                            class="hidden peer" @(Model?.Utilities?.Any(u => u == utility.Id) ?? false ? "checked" : "")>
+                                        <label for='@("Utilities-" + utility.Id)'
+                                            class="peer-checked:[&_svg]:scale-100 text-sm font-medium text-neutral-600 peer-checked:text-purple-600 [&_svg]:scale-0 peer-checked:[&_.remember]:border-purple-500 peer-checked:[&_.remember]:bg-purple-500 select-none flex items-center space-x-2 cursor-pointer">
+                                            <span
+                                                class="flex items-center justify-center w-5 h-5 border-2 rounded remember text-neutral-900">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="3" stroke="currentColor"
+                                                    class="w-3 h-3 text-white duration-300 ease-out">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M4.5 12.75l6 6 9-13.5" />
+                                                </svg>
+                                            </span>
+                                            <span class="flex-1">@utility.Name</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full flex-1">
+                <button type="submit"
+                    class="flex w-full items-center justify-center px-4 py-2 text-md font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-purple-950 hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-purple-900 focus:shadow-outline focus:outline-none">
+                    Sửa thông tin
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts_after {
+    <script>
+        const fileInput = {
+            files:[],
+            oldFiles: [
+            @foreach (var file in Model?.ImageFileURLs ?? new List<string>())
+            {
+                @:{ url: '@file' },
+            }
+            ],
+            inputOnchange(e) {
+                let filesRaw = [...e.target.files];
+                for (let i = 0; i < filesRaw.length; i++) {
+                    if (this.isImageFile(filesRaw[i])) {
+                        let reader = new FileReader();
+                        reader.readAsDataURL(filesRaw[i]);
+                        reader.onload = () => {
+                            this.files.push({ file: filesRaw[i], url: reader.result });
+                        }
+                    }
+                }
+            },
+            isImageFile(file) {
+                const allowedExtensions = ["jpg", "jpeg", "png", "gif"];
+                const fileExtension = file.name.split(".").pop().toLowerCase();
+                return allowedExtensions.includes(fileExtension);
+            },
+            removeImage(index) {
+                this.files.splice(index, 1);
+                this.$refs.ImageFiles.value.files = this.files.map(file => file.file);
+            },
+            removeOldImage(index) {
+                this.oldFiles.splice(index, 1);
+            }
+        }
+    </script> 
+}

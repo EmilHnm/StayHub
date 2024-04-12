@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Sign In";
+    @model main_project.Models.ViewModels.VM_SignIn;
+
+}
+
+<h1 class="text-4xl font-extrabold text-center mt-16">Đăng nhập</h1>
+<p class="text-center text-lg mt-3 text-gray-500">Mừng trở lại, hãy đăng nhập vào tài khoản của bạn.</p>
+<form method="post" asp-controller="Auth" asp-action="SignIn"
+    class="flex flex-col gap-3 md:w-7/12 bg-purple-300 bg-opacity-65 mx-auto min-w-80 px-5 py-7 rounded-lg mt-12">
+    <div class="w-full">
+        <label for="email" class="font-bold text-lg text-purple-600">Email</label>
+        <input type="text" placeholder="Type your email address" id="email" name="Email"
+            class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        <span class="text-sm text-red-500" asp-validation-for="Email"></span>
+    </div>
+    <div class="w-full">
+        <label for="password" class="font-bold text-lg text-purple-600">Password</label>
+        <input type="password" placeholder="Type your password" id="password" name="Password"
+            class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        <span class="text-sm text-red-500" asp-validation-for="Password"></span>
+    </div>
+    <div class="flex items-start mb-6">
+        <div class="flex items-center h-5 ">
+            <input name="RememberMe" id="remember" type="checkbox" class="hidden peer">
+            <label for="remember"
+                class="peer-checked:[&_svg]:scale-100 text-sm font-medium text-neutral-600 peer-checked:text-purple-600 [&_svg]:scale-0 peer-checked:[&_.remember]:border-purple-500 peer-checked:[&_.remember]:bg-purple-500 select-none flex items-center space-x-2 cursor-pointer">
+                <span class="flex items-center justify-center w-5 h-5 border-2 rounded remember text-neutral-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                        stroke="currentColor" class="w-3 h-3 text-white duration-300 ease-out">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                </span>
+                <span>Remember Me</span>
+            </label>
+        </div>
+    </div>
+    <div class="w-full">
+        Chưa có tài khoản? <a asp-area="" asp-controller="Auth" asp-action="SignUp"
+            class="text-purple-900 font-semibold">Đăng ký tại đây</a>
+    </div>
+    <div class="w-full">
+        <button type="submit"
+            class="flex w-full items-center justify-center px-4 py-2 text-md font-medium tracking-wide text-white transition-colors duration-200 rounded-md bg-purple-950 hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-purple-900 focus:shadow-outline focus:outline-none">
+            Đăng nhập
+        </button>
+    </div>
+</form>

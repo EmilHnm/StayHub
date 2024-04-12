@@ -1,0 +1,436 @@
+@{
+    ViewBag.Title = "Quản lý thông tin tài khoản";
+    HostProfile? hostProfile = ViewData["HostProfile"] as HostProfile;
+    RenterProfile? renterProfile = ViewData["RenterProfile"] as RenterProfile;
+}
+<h1 class="text-xl md:text-3xl font-bold text-purple-700 mt-10 mb-5">Quản lý thông tin tài khoản</h1>
+<div class="flex flex-col md:flex-row gap-3 ">
+    <div x-data='HostInforControl' class="flex flex-col min-h-64 flex-1 border-2 border-purple-500 rounded-md p-2">
+        @if (hostProfile != null)
+        {
+            <template x-if="!editMode">
+                <div class="flex-1 flex flex-col">
+                    <div class="flex">
+                        <h2 class="flex-1 text-lg font-bold flex items-center">Thông tin chủ trọ</h2>
+                    </div>
+                    <div class="flex-1 mb-2">
+                        <div class="">
+                            <span class="text-md">Tên chủ trọ: </span>
+                            <span class="font-bold text-lg">@hostProfile.FullName</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Số điện thoại: </span>
+                            <span class="font-bold text-lg">@hostProfile.Phone</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Email: </span>
+                            <span class="font-bold text-lg">@hostProfile.User?.Email</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Ngày tạo thông tin: </span>
+                            <span class="font-bold text-lg">@hostProfile.CreatedAt.ToShortDateString()</span>
+                        </div>
+                    </div>
+                    <button x-on:click="editMode=true"
+                        class="block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Chỉnh sửa thông
+                        tin</button>
+                </div>
+            </template>
+        }
+        else
+        {
+            <template x-if="!editMode">
+                <div class="flex flex-col items-center justify-center flex-1 gap-2">
+                    <h2 class="text-lg font-bold">Chưa có thông tin chủ trọ</h2>
+                    <button x-on:click="editMode=true"
+                        class="block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Tạo thông tin chủ
+                        trọ</button>
+                </div>
+            </template>
+        }
+        <template x-if="editMode">
+            <div class="flex flex-col gap-2">
+                <h2 class="text-lg font-bold text-center">Thông tin chủ trọ</h2>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Tên chủ trọ</label>
+                    <input type="text" placeholder="Nhập tên" x-model="fullname"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Số điện thoại</label>
+                    <input type="text" placeholder="Nhập số điện thoại" x-model="phone"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <ul class="ml-4 list-disc">
+                        <template x-for="error in errors">
+                            <li x-text="error" class="text-sm text-red-500"></li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="w-full flex-1">
+                    <template x-if="!isSumitting">
+                        <div type=button class="flex justify-center gap-2">
+                            <button type="button" x-on:click="onCanceled"
+                                class="flex-1 block bg-gray-500 text-white p-2 rounded-md hover:bg-gray-700">Hủy</button>
+                            <button x-on:click="onSubmit" type="button"
+                                class="flex-1 block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Lưu
+                                thông tin</button>
+                        </div>
+                    </template>
+                    <template x-if="isSumitting">
+                        <button type="submit"
+                            class="w-full flex items-center justify-center bg-purple-500 text-white p-2 rounded-md">
+                            <div class="dots-3"></div>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+    <div x-data="RenterInforControl" class="flex flex-col flex-1 border-2 border-purple-500 rounded-md p-2">
+        @if (renterProfile != null)
+        {
+            <template x-if="!editMode">
+                <div class="flex flex-col gap-2">
+                    <div class="flex">
+                        <h2 class="flex-1 text-lg font-bold flex items-center">Thông tin người thuê</h2>
+                    </div>
+                    <div class="flex-1 mb-2">
+                        <div class="">
+                            <span class="text-md">Tên người thuê: </span>
+                            <span class="font-bold text-lg">@renterProfile.FullName</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Giới tính: </span>
+                            <span class="font-bold text-lg">@renterProfile.Gender</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Số điện thoại: </span>
+                            <span class="font-bold text-lg">@renterProfile.Phone</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Địa chỉ: </span>
+                            <span class="font-bold text-lg">@renterProfile.Address</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Email: </span>
+                            <span class="font-bold text-lg">@renterProfile.User?.Email</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Số CMND/CCCD: </span>
+                            <span class="font-bold text-lg">@renterProfile.IdentityCardNumber</span>
+                        </div>
+                        <div class="">
+                            <span class="text-md">Ngày tạo thông tin: </span>
+                            <span class="font-bold text-lg">@renterProfile.CreatedAt.ToShortDateString()</span>
+                        </div>
+                    </div>
+                    <button x-on:click="editMode=true"
+                        class="block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Chỉnh sửa thông
+                        tin</button>
+                </div>
+            </template>
+
+        }
+        else
+        {
+            <template x-if="!editMode">
+                <div class="flex flex-col items-center justify-center flex-1">
+                    <h2 class="text-lg font-bold">Chưa có thông tin người thuê</h2>
+                    <button x-on:click="editMode=true"
+                        class="block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Tạo thông tin người
+                        thuê</button>
+                </div>
+            </template>
+        }
+        <template x-if="editMode">
+            <div class="flex flex-col gap-2">
+                <h2 class="text-lg font-bold text-center">Thông tin người thuê</h2>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Tên đầy đủ</label>
+                    <input type="text" placeholder="Nhập tên" x-model="fullname"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Giới tính</label>
+                    <div class="flex justify-around">
+                        <div class="mb-[0.125rem] block min-h-[1.5rem] ps-[1.5rem]">
+                            <input
+                                class="relative float-left -ms-[1.5rem] me-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-secondary-500 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-checkbox before:shadow-transparent 
+                                    before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-purple-500 checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-purple-500 checked:after:bg-purple-500 checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-black/60 focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-black/60 focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-purple-500 checked:focus:before:scale-100 checked:focus:before:shadow-checkbox checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] rtl:float-right dark:border-neutral-400 dark:checked:border-purple-500"
+                                type="radio" name="gender" id="gender-male" value="Nam" x-model="gender" />
+                            <label class="mt-px inline-block ps-[0.15rem] hover:cursor-pointer" for="gender-male">
+                                Nam
+                            </label>
+                        </div>
+                        <div class="mb-[0.125rem] block min-h-[1.5rem] ps-[1.5rem]">
+                            <input
+                                class="relative float-left -ms-[1.5rem] me-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-secondary-500 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-checkbox before:shadow-transparent before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-purple-500 checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-purple-500 checked:after:bg-purple-500 checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-black/60 focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-black/60 focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-purple-500 checked:focus:before:scale-100 checked:focus:before:shadow-checkbox checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] rtl:float-right dark:border-neutral-400 dark:checked:border-purple-500"
+                                type="radio" name="gender" id="gender-female" value="Nữ" x-model="gender" />
+                            <label class="mt-px inline-block ps-[0.15rem] hover:cursor-pointer" for="gender-female">
+                                Nữ
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Số điện thoại</label>
+                    <input type="text" placeholder="Nhập số điện thoại" x-model="phone"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Địa chỉ</label>
+                    <input type="text" placeholder="Nhập địa chỉ" x-model="address"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <label for="" class="font-bold text-lg text-purple-600">Số CMND/CCCD</label>
+                    <input type="text" placeholder="Nhập số CMND/CCCD" x-model="identityCardNumber"
+                        class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+                </div>
+                <div class="w-full flex-1">
+                    <ul class="ml-4 list-disc">
+                        <template x-for="error in errors">
+                            <li x-text="error" class="text-sm text-red-500"></li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="w-full flex-1">
+                    <template x-if="!isSumitting">
+                        <div type=button class="flex justify-center gap-2">
+                            <button type="button" x-on:click="onCanceled"
+                                class="flex-1 block bg-gray-500 text-white p-2 rounded-md hover:bg-gray-700">Hủy</button>
+                            <button x-on:click="onSubmit" type="button"
+                                class="flex-1 block bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700">Lưu
+                                thông tin</button>
+                        </div>
+                    </template>
+                    <template x-if="isSumitting">
+                        <button type="button"
+                            class="w-full flex items-center justify-center bg-purple-500 text-white p-2 rounded-md">
+                            <div class="dots-3"></div>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+<h2 class="text-xl md:text-3xl font-bold text-purple-700 mt-10 mb-2">Đổi mật khẩu</h2>
+<form x-on:submit.prevent="onSubmit" class="flex flex-col gap-2" x-data="ChangePassword">
+    <div class="flex flex-col md:flex-row gap-2">
+        <input hidden type="text" autocomplete="username" value="">
+        <div class="w-full flex-1">
+            <label for="" class="font-bold text-lg text-purple-600">Mật khẩu hiện tại</label>
+            <input type="password" placeholder="Nhập mật khẩu hiện tại" autocomplete="current-password"
+                x-model="currentPassword"
+                class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        </div>
+        <div class="w-full flex-1">
+            <label for="" class="font-bold text-lg text-purple-600">Mật khẩu mới</label>
+            <input type="password" placeholder="Nhập mật khẩu mới" autocomplete="new-password" x-model="newPassword"
+                class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        </div>
+        <div class="w-full flex-1">
+            <label for="" class="font-bold text-lg text-purple-600">Nhập lại mật khẩu mới</label>
+            <input type="password" placeholder="Nhập lại mật khẩu" autocomplete="new-password"
+                x-model="confirmNewPassword"
+                class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md border-neutral-300 ring-offset-background placeholder:text-neutral-500 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50" />
+        </div>
+    </div>
+    <div class="w-full flex-1">
+        <ul class="ml-4 list-disc">
+            <template x-for="error in errors">
+                <li x-text="error" class="text-sm text-red-500"></li>
+            </template>
+        </ul>
+    </div>
+    <div class="w-full flex-1 justify-end">
+
+        <button type="submit" :disabled="isSubmitting"
+            class=" bg-purple-500 text-white p-2 rounded-md hover:bg-purple-700 disabled:hover:bg-purple-500 disabled:cursor-not-allowed">
+            <template x-if="isSubmitting">
+                <div class="dots-3"></div>
+            </template>
+            <template x-if="!isSubmitting">
+                <span>Đổi mật khẩu</span>
+            </template>
+        </button>
+    </div>
+</form>
+@section Scripts_Before {
+    <script>
+        const HostInforControl = {
+            editMode: false,
+            model_fullname: "@hostProfile?.FullName",
+            model_phone: "@hostProfile?.Phone",
+            fullname: "@hostProfile?.FullName",
+            phone: "@hostProfile?.Phone",
+            isSumitting: false,
+            errors: [],
+            onSubmit() {
+                this.isSumitting = true;
+                const endpoint = "@(hostProfile != null ? @Url.Action("UpdateHostProfile", "Account") : @Url.Action("CreateHostProfile", "Account"))";
+                fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        fullname: this.fullname,
+                        phone: this.phone
+                    })
+                }).then(response => {
+                    return response.json();
+                }).then((data) => {
+                    if (data.success) {
+                        location.reload();
+                    } else if (!data.success && data.errors != null) {
+                        this.errors = data.errors;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    }
+                })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    })
+                    .finally(() => {
+                        this.isSumitting = false;
+                    });
+            },
+            onCanceled() {
+                this.editMode = false;
+                this.fullname = this.model_fullname;
+                this.phone = this.model_phone;
+            }
+        };
+        const RenterInforControl = {
+            editMode: false,
+            model_fullname: "@renterProfile?.FullName",
+            model_gender: "@renterProfile?.Gender",
+            model_phone: "@renterProfile?.Phone",
+            model_address: "@renterProfile?.Address",
+            model_identityCardNumber: "@renterProfile?.IdentityCardNumber",
+            fullname: "@renterProfile?.FullName",
+            gender: "@renterProfile?.Gender",
+            phone: "@renterProfile?.Phone",
+            address: "@renterProfile?.Address",
+            identityCardNumber: "@renterProfile?.IdentityCardNumber",
+            isSumitting: false,
+            errors: [],
+            onSubmit() {
+                this.isSumitting = true;
+                const endpoint = "@(renterProfile != null ? @Url.Action("UpdateRenterProfile", "Account") : @Url.Action("CreateRenterProfile", "Account"))";
+                console.log(endpoint);
+                fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        fullname: this.fullname,
+                        gender: this.gender,
+                        phone: this.phone,
+                        address: this.address,
+                        identityCardNumber: this.identityCardNumber
+                    })
+                }).then(response => {
+                    return response.json();
+                }).then((data) => {
+                    if (data.success) {
+                        location.reload();
+                    } else if (!data.success && data.errors != null) {
+                        this.errors = data.errors;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    }
+                })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    })
+                    .finally(() => {
+                        this.isSumitting = false;
+                    });
+            },
+            onCanceled() {
+                this.editMode = false;
+                this.fullname = this.model_fullname;
+                this.gender = this.model_gender;
+                this.phone = this.model_phone;
+                this.address = this.model_address;
+                this.identityCardNumber = this.model_identityCardNumber;
+            },
+        };
+        const ChangePassword = {
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: "",
+            isSubmitting: false,
+            errors: [],
+            onSubmit() {
+                console.log(this.currentPassword);
+                this.isSumitting = true;
+                const endpoint = "@Url.Action("ChangePassword", "Account")";
+                fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        currentPassword: this.currentPassword,
+                        newPassword: this.newPassword,
+                        confirmNewPassword: this.confirmNewPassword
+                    })
+                }).then(response => {
+                    return response.json();
+                }).then((data) => {
+                    if (data.success) {
+                        this.currentPassword = "";
+                        this.newPassword = "";
+                        this.confirmNewPassword = "";
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Mật khẩu đã được thay đổi thành công',
+                            title: 'Thành công',
+                        });
+                    } else if (!data.success && data.errors != null) {
+                        this.errors = data.errors;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    }
+                })
+                    .catch((error) => {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+                            title: 'Lỗi',
+                        });
+                    })
+                    .finally(() => {
+                        this.isSumitting = false;
+                    });
+            }
+        }
+    </script>
+}
