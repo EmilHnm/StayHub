@@ -117,7 +117,7 @@ export class Donga {
             let PageReq = await Donga.browser.getPage(endpoint, this.COOKIE);
             await sleep(5000);
             let result = await PageReq.content();
-            await PageReq.close();
+
             if (result === null) {
                 console.log(`   Error when fetching page ${page}`);
                 console.log(`   URL ${endpoint}`);
@@ -211,7 +211,7 @@ export class Donga {
             try {
                 let PageReq = await Donga.browser.getPage(endpoint, this.COOKIE);
                 let result = await PageReq.content();
-                await PageReq.close();
+
                 if (result === null) {
                     console.log(`   Error when fetching page ${endpoint}`);
                     return;
@@ -226,6 +226,7 @@ export class Donga {
                     const imageCount = await this.parseImage(root, (hostels[i] as any).id);
                     console.log(`   Added ${imageCount} images`);
                 }
+                await PageReq.close();
             } catch (err) {
                 console.log(`   Error when fetching page ${endpoint}`);
                 continue;
@@ -257,7 +258,7 @@ export class Donga {
     public async crawl(type) {
         type = this.MAPPING_TYPE[type];
         await this.importHostelType();
-        // await this.getListRoom(type);
+        await this.getListRoom(type);
         console.log("Start crawl room");
         await this.getRoomDetail(type);
         console.log("Start remove error hostel");

@@ -103,7 +103,6 @@ export class DuyTan {
             let PageReq = await DuyTan.browser.getPage(endpoint, this.COOKIE);
             await sleep(5000);
             let result = await PageReq.content();
-            await PageReq.close();
             if (result === null) {
                 console.log(`   Error when fetching page ${page}`);
                 console.log(`   URL ${endpoint}`);
