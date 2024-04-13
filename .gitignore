@@ -1,3 +1,5 @@
 /crawler/node_modules
 /crawler/dist
 /main-project/node_modules
+
+.fake

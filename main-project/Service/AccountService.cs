@@ -37,6 +37,16 @@ public class AccountService
         return null;
     }
 
+    public bool HasRenterProfile(HttpContext context)
+    {
+        User? user = AuthService.GetAuthenticatedUser(context);
+        if (user != null)
+        {
+            return user.RenterProfile != null;
+        }
+        return false;
+    }
+
     public RenterProfile? GetRenterProfile(HttpContext context)
     {
         User? user = AuthService.GetAuthenticatedUser(context);

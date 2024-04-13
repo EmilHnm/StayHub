@@ -1,0 +1,604 @@
+@{
+    ViewData["Title"] = "Hostel Details";
+    @model main_project.Models.Hostel;
+
+}
+<h1 class="text-4xl font-extrabold text-center my-16">@ViewData["Title"]</h1>
+
+<div class="flex flex-col md:flex-row gap-3">
+    <div class="flex-col w-full md:w-1/3">
+        <div x-data="accordion('info')"
+            class="relative w-full mx-auto overflow-hidden text-sm font-normal bg-white border border-gray-200 divide-y divide-gray-200 rounded-md">
+            <div x-data="{ id: 'info' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none group-hover:underline">
+                    <h2 class="font-bold">@Model.Name</h2>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    <div class="p-4 pt-0 flex flex-col gap-2">
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold">Loại nhà trọ</h3>
+                            <p>@Model.AccommodationType?.Name</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold">Giá thuê</h3>
+                            <p>@(String.Format("{0:#,##0.##}", Model.Fee))đ/tháng</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold">Địa chỉ</h3>
+                            <p>@Model.Address</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold">Trạng thái</h3>
+                            <p>@(Model.Status == "active" ? "Còn phòng" : "Hết phòng")</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-semibold">Mô tả</h3>
+                            <p>@foreach (var line in Model.Description?.Split('\n') ?? new string[0])
+                                {
+                                <p>@line</p>
+                                }</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div x-data="{ id: 'image' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none">
+                    <h2>Ảnh</h2>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    <div class="p-4 pt-0">
+                        @if (Model.HostelImages != null && Model.HostelImages.Count() > 0)
+                        {
+                            <div class="grid grid-cols-3 gap-1">
+                                @foreach (var image in Model.HostelImages)
+                                {
+                                    <img src="@image.ImageUrl" alt="@Model.Name"
+                                        class="w-full aspect-square h-auto object-cover">
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Không có ảnh</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div x-data="{ id: 'utilities' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none group-hover:underline">
+                    <span>Tiện ích</span>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    <div class="p-4 pt-0">
+                        @if (Model.HostelUtility != null && Model.HostelUtility.Count() > 0)
+                        {
+                            <div class="grid grid-cols-2 gap-1">
+                                @foreach (var utility in Model.HostelUtility)
+                                {
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M12 14l9-5-9-5-9 5 9 5z">
+                                            </path>
+                                        </svg>
+                                        <span>@utility.Utility?.Name</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Không có tiện ích</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div x-data="{ id: 'action' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none group-hover:underline">
+                    <span>Hành động</span>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    <div class="p-4 pt-0">
+                        <div class="flex gap-2" x-data="ActionController">
+                            <a href="@Url.Action("Edit", "Hostel", new { id = Model.Id })"
+                                class="flex items-center justify-center w-1/2 p-2 text-center text-white bg-purple-500 rounded-md hover:bg-purple-600">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 14l9-5-9-5-9 5 9 5zm0 0v7m-9-5l9 5m0 0l9-5m-9 5V9m9 5v7m-9-5V9m9 5l-9 5">
+                                    </path>
+                                </svg>
+                                <span>Chỉnh sửa</span>
+                            </a>
+                            <button type="button" x-on:click="onDelete(@Model.Id)"
+                                class="flex items-center justify-center w-1/2 p-2 text-center text-white bg-red-500 rounded-md hover:bg-red-600">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 6l3-3m0 0l3 3m-3-3v14a5 5 0 005 5h8a5 5 0 005-5V6m-2 0h-4m-4 0H8m4 0v0m0 0v4m0-4v4">
+                                    </path>
+                                </svg>
+                                <span>Xóa</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="flex-1">
+        <div x-data="accordion('bookings')"
+            class="relative w-full mx-auto overflow-hidden text-sm font-normal bg-white border border-gray-200 divide-y divide-gray-200 rounded-md">
+            <div x-data="{ id: 'bookings' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none group-hover:underline">
+                    <h2 class="font-bold">Lượt đặt (@(Model.Bookings?.Count() ?? 0))</h2>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    @if (Model.Bookings != null && Model.Bookings.Count() > 0)
+                    {
+                        <div class="w-full overflow-x-scroll">
+                            <table class="min-w-full text-sm text-left rtl:text-right text-gray-500 table-fixed">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                                    <tr>
+                                        <td class="px-6 py-3 text-center font-bold">Mã lượt đặt</td>
+                                        <td class="px-6 py-3 text-center font-bold">Tên người đặt</td>
+                                        <td class="px-6 py-3 text-center font-bold">Thời gian đặt</td>
+                                        <td class="px-6 py-3 text-center font-bold">Thời gian tạo</td>
+                                        <td class="px-6 py-3 text-center font-bold">Trạng thái</td>
+                                        <td class="px-6 py-3 text-center font-bold"></td>
+                                    </tr>
+                                </thead>
+                                <tbody x-data="BookingController">
+                                    @foreach (var booking in Model.Bookings)
+                                    {
+                                        <tr class="bg-white border-b ">
+                                            <td class="px-6 py-4 text-center font-medium text-gray-900 whitespace-nowrap ">
+                                                @booking.Id</td>
+                                            <td class="px-6 py-4 text-center">
+                                                <div x-data="hovercard" class="relative" x-on:mouseover="hoverCardEnter()"
+                                                    x-on:mouseleave="hoverCardLeave()" x-ref="root">
+                                                    <span
+                                                        class="hover:underline hover:text-purple-500">@(booking.RenterProfile?.FullName
+                                                ??
+                                                "Trống")</span>
+                                                    <template x-teleport="body">
+                                                        <div x-show="hoverCardHovered"
+                                                            class="absolute w-[365px] max-w-lg z-30 -translate-x-1/2"
+                                                            x-ref="card" x-cloak>
+                                                            <div x-show="hoverCardHovered" class="w-[full] h-auto bg-white p-3 flex items-start rounded-md shadow-sm border
+                                                                        border-neutral-200/70" x-transition>
+                                                                <div class="relative text-sm">
+                                                                    <p>Họ tên: <span
+                                                                            class="font-bold">@(booking.RenterProfile?.FullName)</span>
+                                                                    </p>
+                                                                    <p>Giới tính: <span
+                                                                            class="font-bold">@(booking.RenterProfile?.Gender)</span>
+                                                                    </p>
+                                                                    <p>Địa chỉ: <span
+                                                                            class="font-bold">@(booking.RenterProfile?.Address)</span>
+                                                                    </p>
+                                                                    <p>Số điên thoại: <span
+                                                                            class="font-bold">@(booking.RenterProfile?.Phone)</span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @booking.StartDate.ToString("dd/MM/yyyy") -
+                                                @booking.EndDate.ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @booking.CreatedAt.ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @booking.Status
+                                            </td>
+                                            <td>
+                                                @if (booking.Status == "pending")
+                                                {
+                                                    <div class="flex flex-col md:flex-row gap-1">
+                                                        <button x-on:click="onApprove(@booking.Id)" type="button" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium
+                                                            tracking-wide text-white transition-colors duration-200 rounded-md bg-purple-500
+                                                            hover:bg-purple-400 focus:ring-2 focus:ring-offset-2 focus:ring-purple-400
+                                                            focus:shadow-outline focus:outline-none">
+                                                            Chấp thuận
+                                                        </button>
+                                                        <button x-on:click="onReject(@booking.Id)" type="button" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium
+                                                            tracking-wide text-white transition-colors duration-200 rounded-md bg-red-500
+                                                            hover:bg-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-400
+                                                            focus:shadow-outline focus:outline-none">
+                                                            Từ chối
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 pt-0 flex flex-col gap-2">
+                            <p>Không có lượt đặt</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div x-data="{ id: 'leases' }" class="cursor-pointer group">
+                <button x-on:click="setActiveAccordion(id)"
+                    class="flex items-center justify-between w-full p-4 text-left select-none">
+                    <h2 class="font-bold">Hợp đồng (@(Model.LeaseContracts?.Count() ?? 0))</h2>
+                    <svg class="w-4 h-4 duration-200 ease-out" :class="{ 'rotate-180': activeAccordion==id }"
+                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion==id" x-collapse x-cloak>
+                    @if (Model.LeaseContracts != null && Model.LeaseContracts.Count() > 0)
+                    {
+                        <div class="w-full overflow-x-scroll">
+                            <table class="min-w-full text-sm text-left rtl:text-right text-gray-500 table-fixed">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+                                    <tr>
+                                        <td class="px-6 py-3 text-center font-bold">Mã hợp đồng</td>
+                                        <td class="px-6 py-3 text-center font-bold">Tên người đặt</td>
+                                        <td class="px-6 py-3 text-center font-bold">Thời gian đặt</td>
+                                        <td class="px-6 py-3 text-center font-bold">Thời gian tạo</td>
+                                        <td class="px-6 py-3 text-center font-bold">Trạng thái</td>
+                                        <td class="px-6 py-3 text-center font-bold"></td>
+                                    </tr>
+                                </thead>
+                                <tbody x-data="LeaseController">
+                                    @foreach (var lease in Model.LeaseContracts)
+                                    {
+                                        <tr class="bg-white border-b ">
+                                            <td class="px-6 py-4 text-center font-medium text-gray-900 whitespace-nowrap ">
+                                                @lease.Id</td>
+                                            <td class="px-6 py-4 text-center">
+                                                <div x-data="hovercard" class="relative" x-on:mouseover="hoverCardEnter()"
+                                                    x-on:mouseleave="hoverCardLeave()" x-ref="root">
+                                                    <span class="hover:underline hover:text-purple-500">@(lease.Renter?.FullName
+                                                ??
+                                                "Trống")</span>
+                                                    <template x-teleport="body">
+                                                        <div x-show="hoverCardHovered"
+                                                            class="absolute w-[365px] max-w-lg z-30 -translate-x-1/2"
+                                                            x-ref="card" x-cloak>
+                                                            <div x-show="hoverCardHovered" class="w-[full] h-auto bg-white p-3 flex items-start rounded-md shadow-sm border
+                                                                        border-neutral-200/70" x-transition>
+                                                                <div class="relative text-sm">
+                                                                    <p>Họ tên: <span
+                                                                            class="font-bold">@(lease.Renter?.FullName)</span>
+                                                                    </p>
+                                                                    <p>Giới tính: <span
+                                                                            class="font-bold">@(lease.Renter?.Gender)</span>
+                                                                    </p>
+                                                                    <p>Địa chỉ: <span
+                                                                            class="font-bold">@(lease.Renter?.Address)</span>
+                                                                    </p>
+                                                                    <p>Số điên thoại: <span
+                                                                            class="font-bold">@(lease.Renter?.Phone)</span>
+                                                                    </p>
+                                                                    <p>CMND/CCCD: <span
+                                                                            class="font-bold">@(lease.Renter?.IdentityCardNumber)</span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @lease.StartDate.ToString("dd/MM/yyyy") -
+                                                @lease.EndDate.ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @lease.CreatedAt.ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @lease.Status
+                                            </td>
+                                            <td>
+                                                @if (lease.Status == "active")
+                                                {
+                                                    <div class="flex flex-col md:flex-row gap-1">
+                                                        <button x-on:click="onExtend(@lease.Id)" type="button" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium
+                                                            tracking-wide text-white transition-colors duration-200 rounded-md bg-purple-500
+                                                            hover:bg-purple-400 focus:ring-2 focus:ring-offset-2 focus:ring-purple-400
+                                                            focus:shadow-outline focus:outline-none">
+                                                            Gia hạn
+                                                        </button>
+                                                        <button x-on:click="onCancel(@lease.Id)" type="button" class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium
+                                                            tracking-wide text-white transition-colors duration-200 rounded-md bg-red-500
+                                                            hover:bg-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-400
+                                                            focus:shadow-outline focus:outline-none">
+                                                            Hủy
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 pt-0 flex flex-col gap-2">
+                            <p>Không có hợp đồng nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="date-booking-template">
+    <form x-on:submit.prevent="onSubmit($event)" class="min-h-96">
+        <div x-data="datepicker" x-cloak>
+            <div class="container px-4 py-2 mx-auto md:py-10">
+                <div class="w-full mb-5">
+                    <label for="datepicker" class="block mb-1 text-sm font-medium text-neutral-500">Ngày kết
+                        thúc</label>
+                    <div class="relative">
+                        <input x-ref="datePickerInput" type="text" x-on:click="datePickerOpen=!datePickerOpen"
+                            x-model="datePickerValue" x-on:keydown.escape="datePickerOpen=false"
+                            class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md text-neutral-600 border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="Select date" name="NewEndDate" readonly />
+                        <div x-on:click="datePickerOpen=!datePickerOpen; if(datePickerOpen){ $refs.datePickerInput.focus() }"
+                            class="absolute top-0 right-0 px-3 py-2 cursor-pointer text-neutral-400 hover:text-neutral-500">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div x-show="datePickerOpen" x-transition x-on:click.away="datePickerOpen = false"
+                            class="absolute top-0 left-0 max-w-lg p-4 mt-12 antialiased bg-white border rounded-lg shadow w-[17rem] border-neutral-200/70 z-10">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <span x-text="datePickerMonthNames[datePickerMonth]"
+                                        class="text-lg font-bold text-gray-800"></span>
+                                    <span x-text="datePickerYear" class="ml-1 text-lg font-normal text-gray-600"></span>
+                                </div>
+                                <div>
+                                    <button x-on:click="datePickerPreviousMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button x-on:click="datePickerNextMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-7 mb-3">
+                                <template x-for="(day, index) in datePickerDays" :key="index">
+                                    <div class="px-0.5">
+                                        <div x-text="day" class="text-xs font-medium text-center text-gray-800"></div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="grid grid-cols-7">
+                                <template x-for="blankDay in datePickerBlankDaysInMonth">
+                                    <div class="p-1 text-sm text-center border border-transparent"></div>
+                                </template>
+                                <template x-for="(day, dayIndex) in datePickerDaysInMonth" :key="dayIndex">
+                                    <div class="px-0.5 mb-1 aspect-square">
+                                        <div x-text="day" x-on:click="datePickerDayClicked(day)" :class="{
+                                                                    'bg-neutral-200': datePickerIsToday(day) == true, 
+                                                                    'text-purple-300 hover:bg-neutral-200': datePickerIsToday(day) == false && datePickerIsSelectedDate(day) == false,
+                                                                    'bg-purple-500 text-white hover:bg-opacity-75': datePickerIsSelectedDate(day) == true
+                                                                }"
+                                            class="flex items-center justify-center text-sm leading-none text-center rounded-full cursor-pointer h-7 w-7">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center mt-4">
+            <button type="submit"
+                class="px-4 py-2 text-white bg-purple-950 rounded-md hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-purple-900 focus:shadow-outline focus:outline-none">
+                Xác nhận
+            </button>
+            <button type="button" x-on:click="onCancel()"
+                class="px-4 py-2 ml-4 text-white bg-red-500 rounded-md hover:bg-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:shadow-outline focus:outline-none">
+                Hủy
+            </button>
+        </div>
+    </form>
+</template>
+
+@section Scripts_Before {
+    <script>
+        const ActionController = {
+            onDelete(id) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn xóa?',
+                    text: "Dữ liệu sẽ không thể khôi phục sau khi xóa!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Hostel/Delete/${id}`;
+                    }
+                })
+            }
+        }
+        const BookingController = {
+            onApprove(id) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn chấp thuận đặt phòng này?',
+                    showCancelButton: true,
+                    confirmButtonText: `Đồng ý`,
+                    cancelButtonText: `Hủy`,
+                    confirmButtonColor: '#A855F7',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Booking/Approve/${id}`;
+                    }
+                })
+            },
+            onReject(id) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn từ chối đặt phòng này?',
+                    showCancelButton: true,
+                    confirmButtonText: `Đồng ý`,
+                    cancelButtonText: `Hủy`,
+                    confirmButtonColor: '#FF0000',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Booking/Reject/${id}`;
+                    }
+                })
+            }
+        }
+        const LeaseController = {
+            onExtend(id) {
+                let rootHtml = document.getElementById('date-booking-template').innerHTML;
+                let fromHtml = new DOMParser().parseFromString(rootHtml, 'text/html');
+                let form = fromHtml.getElementsByClassName('min-h-96')[0];
+                form.setAttribute('x-data', 'SubmitFrom(' + id + ')');
+                Swal.fire({
+                    title: 'Xác nhận đặt phòng',
+                    html: `${form.outerHTML.toString()}`,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
+            },
+            onCancel(id) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn hủy hợp đồng này?',
+                    showCancelButton: true,
+                    confirmButtonText: `Đồng ý`,
+                    cancelButtonText: `Hủy`,
+                    confirmButtonColor: '#FF0000',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Booking/CancelLease/${id}`;
+                    }
+                })
+            }
+        }
+        document.addEventListener('alpine:init', function () {
+            Alpine.data('SubmitFrom', (id) => ({
+                onSubmit(e) {
+                    const data = new FormData(e.target);
+                    data.set('LeaseId', id);
+                    Swal.fire({
+                        title: "Đang tạo thông tin đặt phòng!",
+                        text: "Vui lòng chờ trong giây lát",
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        allowOutsideClick: false,
+                    });
+                    let body = {
+                        "LeaseId": data.get('LeaseId'),
+                        "NewEndDate": new Date(data.get('NewEndDate')).toISOString(),
+                    };
+                    fetch('@Url.Action("ExtendLease", "Booking")', {
+                        method: 'POST',
+                        body: JSON.stringify(body),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Request failed.');
+                    }).then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Gia hạn thành công',
+                                text: 'Đã gia hạn hợp đồng thành công',
+                            });
+                        } else {
+                            if (data.errors) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gia hạn thất bại',
+                                    text: data.errors[0],
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gia hạn thất bại',
+                                    text: 'Vui lòng thử lại sau',
+                                });
+
+                            }
+                        }
+                    }).catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đặt phòng thất bại',
+                            text: 'Vui lòng thử lại sau',
+                        });
+                    });
+                },
+                onCancel() {
+                    Swal.close();
+                }
+            }));
+        })
+    </script>
+}

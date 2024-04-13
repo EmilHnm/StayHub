@@ -132,12 +132,170 @@
         }
     </div>
 </div>
+<template id="date-booking-template">
+    <form x-data="SubmitFrom" x-on:submit.prevent="onSubmit($event)" class="min-h-96">
+        <div x-data="datepicker" x-cloak>
+            <div class="container px-4 py-2 mx-auto md:py-10">
+                <div class="w-full mb-5">
+                    <label for="datepicker" class="block mb-1 text-sm font-medium text-neutral-500">Ngày bắt đầu</label>
+                    <div class="relative">
+                        <input x-ref="datePickerInput" type="text" x-on:click="datePickerOpen=!datePickerOpen"
+                            x-model="datePickerValue" x-on:keydown.escape="datePickerOpen=false"
+                            class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md text-neutral-600 border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="Select date" name="StartDate" readonly />
+                        <div x-on:click="datePickerOpen=!datePickerOpen; if(datePickerOpen){ $refs.datePickerInput.focus() }"
+                            class="absolute top-0 right-0 px-3 py-2 cursor-pointer text-neutral-400 hover:text-neutral-500">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div x-show="datePickerOpen" x-transition x-on:click.away="datePickerOpen = false"
+                            class="absolute top-0 left-0 max-w-lg p-4 mt-12 antialiased bg-white border rounded-lg shadow w-[17rem] border-neutral-200/70 z-10">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <span x-text="datePickerMonthNames[datePickerMonth]"
+                                        class="text-lg font-bold text-gray-800"></span>
+                                    <span x-text="datePickerYear" class="ml-1 text-lg font-normal text-gray-600"></span>
+                                </div>
+                                <div>
+                                    <button x-on:click="datePickerPreviousMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button x-on:click="datePickerNextMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-7 mb-3">
+                                <template x-for="(day, index) in datePickerDays" :key="index">
+                                    <div class="px-0.5">
+                                        <div x-text="day" class="text-xs font-medium text-center text-gray-800"></div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="grid grid-cols-7">
+                                <template x-for="blankDay in datePickerBlankDaysInMonth">
+                                    <div class="p-1 text-sm text-center border border-transparent"></div>
+                                </template>
+                                <template x-for="(day, dayIndex) in datePickerDaysInMonth" :key="dayIndex">
+                                    <div class="px-0.5 mb-1 aspect-square">
+                                        <div x-text="day" x-on:click="datePickerDayClicked(day)" :class="{
+                                                                    'bg-neutral-200': datePickerIsToday(day) == true, 
+                                                                    'text-purple-300 hover:bg-neutral-200': datePickerIsToday(day) == false && datePickerIsSelectedDate(day) == false,
+                                                                    'bg-purple-500 text-white hover:bg-opacity-75': datePickerIsSelectedDate(day) == true
+                                                                }"
+                                            class="flex items-center justify-center text-sm leading-none text-center rounded-full cursor-pointer h-7 w-7">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div x-data="datepicker" x-cloak>
+            <div class="container px-4 py-2 mx-auto md:py-10">
+                <div class="w-full mb-5">
+                    <label for="datepicker" class="block mb-1 text-sm font-medium text-neutral-500">Ngày kết
+                        thúc</label>
+                    <div class="relative">
+                        <input x-ref="datePickerInput" type="text" x-on:click="datePickerOpen=!datePickerOpen"
+                            x-model="datePickerValue" x-on:keydown.escape="datePickerOpen=false"
+                            class="flex w-full h-10 px-3 py-2 text-sm bg-white border rounded-md text-neutral-600 border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="Select date" name="EndDate" readonly />
+                        <div x-on:click="datePickerOpen=!datePickerOpen; if(datePickerOpen){ $refs.datePickerInput.focus() }"
+                            class="absolute top-0 right-0 px-3 py-2 cursor-pointer text-neutral-400 hover:text-neutral-500">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div x-show="datePickerOpen" x-transition x-on:click.away="datePickerOpen = false"
+                            class="absolute top-0 left-0 max-w-lg p-4 mt-12 antialiased bg-white border rounded-lg shadow w-[17rem] border-neutral-200/70 z-10">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <span x-text="datePickerMonthNames[datePickerMonth]"
+                                        class="text-lg font-bold text-gray-800"></span>
+                                    <span x-text="datePickerYear" class="ml-1 text-lg font-normal text-gray-600"></span>
+                                </div>
+                                <div>
+                                    <button x-on:click="datePickerPreviousMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button x-on:click="datePickerNextMonth()" type="button"
+                                        class="inline-flex p-1 transition duration-100 ease-in-out rounded-full cursor-pointer focus:outline-none focus:shadow-outline hover:bg-gray-100">
+                                        <svg class="inline-flex w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-7 mb-3">
+                                <template x-for="(day, index) in datePickerDays" :key="index">
+                                    <div class="px-0.5">
+                                        <div x-text="day" class="text-xs font-medium text-center text-gray-800"></div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="grid grid-cols-7">
+                                <template x-for="blankDay in datePickerBlankDaysInMonth">
+                                    <div class="p-1 text-sm text-center border border-transparent"></div>
+                                </template>
+                                <template x-for="(day, dayIndex) in datePickerDaysInMonth" :key="dayIndex">
+                                    <div class="px-0.5 mb-1 aspect-square">
+                                        <div x-text="day" x-on:click="datePickerDayClicked(day)" :class="{
+                                                                    'bg-neutral-200': datePickerIsToday(day) == true, 
+                                                                    'text-purple-300 hover:bg-neutral-200': datePickerIsToday(day) == false && datePickerIsSelectedDate(day) == false,
+                                                                    'bg-purple-500 text-white hover:bg-opacity-75': datePickerIsSelectedDate(day) == true
+                                                                }"
+                                            class="flex items-center justify-center text-sm leading-none text-center rounded-full cursor-pointer h-7 w-7">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center mt-4">
+            <button type="submit"
+                class="px-4 py-2 text-white bg-purple-950 rounded-md hover:bg-purple-900 focus:ring-2 focus:ring-offset-2 focus:ring-purple-900 focus:shadow-outline focus:outline-none">
+                Xác nhận
+            </button>
+            <button type="button" x-on:click="onCancel()"
+                class="px-4 py-2 ml-4 text-white bg-red-500 rounded-md hover:bg-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:shadow-outline focus:outline-none">
+                Hủy
+            </button>
+        </div>
+    </form>
+</template>
 
 @section scripts_after
 {
     <script>
         const contactData = {
             isShowable: @(main_project.Service.AuthService.IsAuthenticated(Context) ? "true" : "false"),
+            isLoading: false,
             onBooking() {
                 if (!this.isShowable) {
                     Swal.fire({
@@ -148,6 +306,17 @@
                     return;
                 }
                 if (@(Model.Status == "active" ? "true" : "false")) {
+                    if (@(main_project.Service.AccountService.Instance().HasRenterProfile(Context) ? "true" : "false")) {
+                        this.createTicket();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Bạn cần cập nhật thông tin người thuê để đăng kí đặt phòng',
+                            title: 'Cập nhật thông tin',
+                        }).then(() => {
+                            window.open('@Url.Action("Index", "Account")', '_blank').focus();
+                        });
+                    }
                 }
                 else {
                     Swal.fire({
@@ -156,6 +325,25 @@
                         title: 'Thất bại',
                     });
                 }
+            },
+            createTicket() {
+                if (this.isLoading) {
+                    Swal.fire({
+                        icon: '',
+                        text: 'Đang tạo yêu cầu đặt phòng',
+                        title: 'Đang xử lý',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                    });
+                    return;
+                }
+                let datePickHtml = document.getElementById('date-booking-template').innerHTML.toString();
+                Swal.fire({
+                    title: 'Xác nhận đặt phòng',
+                    html: `${datePickHtml}`,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                })
             }
         };
         const imageGallery = {
@@ -163,11 +351,11 @@
             imageGalleryActiveUrl: null,
             imageGalleryImageIndex: null,
             imageGallery: [
-        @foreach (var image in Model.HostelImages)
+        @foreach (var image in Model.HostelImages ?? new List<main_project.Models.HostelImages>())
         {
             @:{ 'photo': '@image.ImageUrl', 'alt': 'Photo of @Model.Name' },
         }
-                                                                                                                                                                                                ],
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ],
             imageGalleryOpen(event) {
                 this.imageGalleryImageIndex = event.target.dataset.index;
                 this.imageGalleryActiveUrl = event.target.src;
@@ -187,5 +375,6 @@
 
             }
         }
+
     </script>
 }

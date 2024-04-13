@@ -57,6 +57,18 @@ public class HostelService
             .FirstOrDefault();
     }
 
+    public Hostel? GetHostelForManage(int id)
+    {
+        return Hostel.Query().Where(h => h.Id == id)
+            .Include(h => h.HostelImages)
+            .Include(h => h.HostProfile).ThenInclude(h => h.User)
+            .Include(h => h.AccommodationType)
+            .Include(h => h.HostelUtility).ThenInclude(h => h.Utility)
+            .Include(h => h.Bookings).ThenInclude(b => b.RenterProfile)
+            .Include(h => h.LeaseContracts).ThenInclude(l => l.Renter)
+            .FirstOrDefault();
+    }
+
     public Hostel? CreateHostel(Hostel hostel, List<string> ImagePath, List<int>? UtilitiesId)
     {
         try
@@ -206,7 +218,10 @@ public class HostelService
 
     public List<Hostel> GetHostelsByHostId(int hostId)
     {
-        return Hostel.Query().Where(h => h.HostId == hostId).ToList();
+        return Hostel.Query()
+        .Include(h => h.Bookings).Include(h => h.LeaseContracts)
+        .Where(h => h.HostId == hostId).OrderByDescending(h => h.CreatedAt)
+        .ToList();
     }
 
     public bool SaveHostelImage(int hostelId, string imageFile)

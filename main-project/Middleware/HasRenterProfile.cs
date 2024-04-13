@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace main_project.Middleware;
-public class HasHostProfile : ActionFilterAttribute
+public class HasRenterProfile : ActionFilterAttribute
 {
     public override void OnActionExecuted(ActionExecutedContext context)
     {
-        if (!AccountService.Instance().HasHostProfile(context.HttpContext))
+        if (!AccountService.Instance().HasRenterProfile(context.HttpContext))
         {
             context.Result = new RedirectToRouteResult(
                 new RouteValueDictionary {

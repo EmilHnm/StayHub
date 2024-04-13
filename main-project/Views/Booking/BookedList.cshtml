@@ -1,0 +1,74 @@
+@{
+    ViewBag.Title = "Manage Hostel";
+    @model List<Booking>;
+
+}
+@* @{
+var hasPreviousPage = Model.HasPreviousPage() ? "" : "opacity-50 pointer-events-none";
+var hasNextPage = Model.HasNextPage() ? "" : "opacity-50 pointer-events-none";
+} *@
+<h1 class="text-4xl font-extrabold text-center mt-16 mb-10 text-purple-500">Quản lý nhà trọ</h1>
+
+<div class="w-full overflow-x-scroll">
+    <table class="min-w-full text-sm text-left rtl:text-right text-gray-500 table-fixed">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+            <tr>
+                <td class="px-6 py-3 text-center font-bold">Mã</td>
+                <td class="px-6 py-3 text-center font-bold">Tên nhà trọ</td>
+                <td class="px-6 py-3 text-center font-bold">Thời gian đặt</td>
+                <td class="px-6 py-3 text-center font-bold">Thời gian tạo</td>
+                <td class="px-6 py-3 text-center font-bold">Trạng thái</td>
+                <td class="px-6 py-3 text-center font-bold"></td>
+            </tr>
+        </thead>
+        <tbody x-data="bookedlistControl">
+            @foreach (var booking in Model)
+            {
+                <tr class="bg-white border-b ">
+                    <td class="px-6 py-4 text-center font-medium text-gray-900 whitespace-nowrap ">@booking.Id</td>
+                    <td class="px-6 py-4 text-center">@booking.Hostel?.Name</td>
+                    <td class="px-6 py-4">
+                        Ngày bắt đầu: <span class="">@booking.StartDate.ToString("dd/MM/yyyy")</span><br>
+                        Ngày ngày kết thúc: <span class="">@booking.EndDate.ToString("dd/MM/yyyy")</span><br>
+                    </td>
+                    <td class="px-6 py-4 text-center">@booking.CreatedAt.ToString("dd/MM/yyyy")</td>
+                    <td class="px-6 py-4 text-center">@booking.Status</td>
+                    <td>
+                        <div class="flex flex-col md:flex-row gap-1">
+                            @if (booking.Status == "pending")
+                            {
+                                <button x-on:click="cancel(@booking.Id)" type="button"
+                                    class="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium tracking-wide
+                                    text-white transition-colors duration-200 rounded-md bg-red-500 hover:bg-red-400 focus:ring-2
+                                    focus:ring-offset-2 focus:ring-red-400 focus:shadow-outline focus:outline-none cursor-pointer">
+                                    Hủy
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts_Before {
+    <script>
+        const bookedlistControl = {
+            cancel: function (id) {
+                Swal.fire({
+                    title: 'Bạn có chắc chắn muốn hủy đặt phòng này?',
+                    showCancelButton: true,
+                    confirmButtonText: `Đồng ý`,
+                    cancelButtonText: `Hủy`,
+                    confirmButtonColor: '#FF0000',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Booking/Cancel/${id}`;
+                    }
+                })
+            }
+        }
+    </script>
+}

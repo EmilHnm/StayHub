@@ -15,4 +15,10 @@ public class LeaseContract
 
     public virtual RenterProfile? Renter { get; set; }
     public virtual Hostel? Hostel { get; set; }
+
+    public static IQueryable<LeaseContract> Query()
+    {
+        DatabaseContext db = new DatabaseContext();
+        return db.leaseContracts;
+    }
 }

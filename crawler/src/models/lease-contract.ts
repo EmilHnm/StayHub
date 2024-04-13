@@ -36,8 +36,7 @@ const LeaseContract = sequelize.define("LeaseContract", {
         type: DataTypes.INTEGER,
     },
     status: {
-        type: DataTypes.STRING,
-        values: ['active', 'inactive'],
+        type: DataTypes.ENUM('active', 'inactive'),
         defaultValue: 'active',
     },
 }, {

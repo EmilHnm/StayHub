@@ -12,4 +12,10 @@ public class Booking
     public DateTime UpdatedAt { get; set; }
     public Hostel? Hostel { get; set; }
     public RenterProfile? RenterProfile { get; set; }
+
+    public static IQueryable<Booking> Query()
+    {
+        DatabaseContext db = new DatabaseContext();
+        return db.bookings;
+    }
 }

@@ -128,6 +128,21 @@ public class HostelController : Controller
     }
     [Authentication]
     [HasHostProfile]
+    public IActionResult ManageDetail(int id)
+    {
+        Hostel? hostel = HostelService.Instance().GetHostelForManage(id);
+        if (hostel == null || hostel.HostId != (AccountService.Instance().GetHostProfile(HttpContext)?.Id ?? 0))
+        {
+            return NotFound();
+        }
+        else
+        {
+            return View(hostel);
+        }
+    }
+
+    [Authentication]
+    [HasHostProfile]
     public IActionResult Edit(int id)
     {
         Hostel? hostel = HostelService.Instance().GetHostel(id);
@@ -171,7 +186,6 @@ public class HostelController : Controller
         int hostId = AccountService.Instance().GetHostProfile(HttpContext)?.Id ?? 0;
         if (hostId == 0 || vm.Id == null)
         {
-            Console.WriteLine(hostId);
             return NotFound();
         }
         else
