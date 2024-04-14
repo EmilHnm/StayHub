@@ -541,7 +541,7 @@
                     const data = new FormData(e.target);
                     data.set('LeaseId', id);
                     Swal.fire({
-                        title: "Đang tạo thông tin đặt phòng!",
+                        title: "Đang gia hạn hợp đồng!",
                         text: "Vui lòng chờ trong giây lát",
                         timerProgressBar: true,
                         didOpen: () => {
@@ -590,7 +590,7 @@
                     }).catch(error => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Đặt phòng thất bại',
+                            title: 'Gia hạn thất bại',
                             text: 'Vui lòng thử lại sau',
                         });
                     });

@@ -129,6 +129,15 @@ public class BookingService
             DatabaseContext db = new DatabaseContext();
             db.bookings.Update(booking);
             db.SaveChanges();
+
+            List<Booking> otherBookings = Booking.Query().Where(b => b.HostelId == booking.HostelId && b.Status == "pending" && b.StartDate >= booking.StartDate && b.EndDate <= booking.EndDate).ToList();
+            foreach (Booking otherBooking in otherBookings)
+            {
+                otherBooking.Status = "rejected";
+                otherBooking.UpdatedAt = DateTime.Now;
+                db.bookings.Update(otherBooking);
+            }
+            db.SaveChanges();
             return booking;
         }
         catch (System.Exception)
