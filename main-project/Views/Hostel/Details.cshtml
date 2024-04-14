@@ -352,95 +352,96 @@
             imageGalleryImageIndex: null,
             imageGallery: [
         @foreach (var image in Model.HostelImages ?? new List<main_project.Models.HostelImages>())
-    {
-        @:{ 'photo': '@image.ImageUrl', 'alt': 'Photo of @Model.Name' },
-    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ],
-        imageGalleryOpen(event) {
-            this.imageGalleryImageIndex = event.target.dataset.index;
-            this.imageGalleryActiveUrl = event.target.src;
-            this.imageGalleryOpened = true;
-        },
-        imageGalleryClose() {
-            this.imageGalleryOpened = false;
-            setTimeout(() => this.imageGalleryActiveUrl = null, 300);
-        },
-        imageGalleryNext() {
-            this.imageGalleryImageIndex = (this.imageGalleryImageIndex == this.imageGallery.length) ? 1 : (parseInt(this.imageGalleryImageIndex) + 1);
-            this.imageGalleryActiveUrl = this.$refs.gallery.querySelector('[data-index=\'' + this.imageGalleryImageIndex + '\']').src;
-        },
-        imageGalleryPrev() {
-            this.imageGalleryImageIndex = (this.imageGalleryImageIndex == 1) ? this.imageGallery.length : (parseInt(this.imageGalleryImageIndex) - 1);
-            this.imageGalleryActiveUrl = this.$refs.gallery.querySelector('[data-index=\'' + this.imageGalleryImageIndex + '\']').src;
-
+        {
+            @:{ 'photo': '@image.ImageUrl', 'alt': 'Photo of @Model.Name' },
         }
-    }
-    document.addEventListener('alpine:init', function () {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ],
+            imageGalleryOpen(event) {
+                this.imageGalleryImageIndex = event.target.dataset.index;
+                this.imageGalleryActiveUrl = event.target.src;
+                this.imageGalleryOpened = true;
+            },
+            imageGalleryClose() {
+                this.imageGalleryOpened = false;
+                setTimeout(() => this.imageGalleryActiveUrl = null, 300);
+            },
+            imageGalleryNext() {
+                this.imageGalleryImageIndex = (this.imageGalleryImageIndex == this.imageGallery.length) ? 1 : (parseInt(this.imageGalleryImageIndex) + 1);
+                this.imageGalleryActiveUrl = this.$refs.gallery.querySelector('[data-index=\'' + this.imageGalleryImageIndex + '\']').src;
+            },
+            imageGalleryPrev() {
+                this.imageGalleryImageIndex = (this.imageGalleryImageIndex == 1) ? this.imageGallery.length : (parseInt(this.imageGalleryImageIndex) - 1);
+                this.imageGalleryActiveUrl = this.$refs.gallery.querySelector('[data-index=\'' + this.imageGalleryImageIndex + '\']').src;
 
-        Alpine.data('SubmitFrom', () => ({
-            onSubmit(e) {
-                const data = new FormData(e.target);
-                data.set('HostelId', '@Model.Id');
-                Swal.fire({
-                    title: "Đang tạo thông tin đặt phòng!",
-                    text: "Vui lòng chờ trong giây lát",
-                    timerProgressBar: true,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                    allowOutsideClick: false,
-                });
-                let body = {
-                    "HostelId": data.get('HostelId'),
-                    "StartDate": new Date(data.get('StartDate')).toISOString(),
-                    "EndDate": new Date(data.get('EndDate')).toISOString(),
-                };
-                fetch('@Url.Action("Create", "Booking")', {
-                    method: 'POST',
-                    body: JSON.stringify(body),
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('Request failed.');
-                }).then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Đặt phòng thành công',
-                            text: 'Đã Đặt phòng thành công',
-                        });
-                    } else {
-                        if (data.errors) {
+            }
+        }
+        document.addEventListener('alpine:init', function () {
+
+            Alpine.data('SubmitFrom', () => ({
+                onSubmit(e) {
+                    const data = new FormData(e.target);
+                    data.set('HostelId', '@Model.Id');
+                    Swal.fire({
+                        title: "Đang tạo thông tin đặt phòng!",
+                        text: "Vui lòng chờ trong giây lát",
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        allowOutsideClick: false,
+                    });
+                    let body = {
+                        "HostelId": data.get('HostelId'),
+                        "StartDate": new Date(data.get('StartDate')).toISOString(),
+                        "EndDate": new Date(data.get('EndDate')).toISOString(),
+                    };
+                    fetch('@Url.Action("Create", "Booking")', {
+                        method: 'POST',
+                        body: JSON.stringify(body),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Request failed.');
+                    }).then(data => {
+                        if (data.success) {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Đặt phòng thất bại',
-                                text: data.errors[0],
+                                icon: 'success',
+                                title: 'Đặt phòng thành công',
+                                text: 'Đã Đặt phòng thành công',
                             });
                         } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Đặt phòng thất bại',
-                                text: 'Vui lòng thử lại sau',
-                            });
+                            if (data.errors) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Đặt phòng thất bại',
+                                    text: data.errors[0],
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Đặt phòng thất bại',
+                                    text: 'Vui lòng thử lại sau',
+                                });
 
+                            }
                         }
-                    }
-                }).catch(error => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Đặt phòng thất bại',
-                        text: 'Vui lòng thử lại sau',
+                    }).catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đặt phòng thất bại',
+                            text: 'Vui lòng thử lại sau',
+                        });
                     });
-                });
-            },
-            onCancel() {
-                Swal.close();
-            }
-        }));
-    });
+                },
+                onCancel() {
+                    Swal.close();
+                }
+            }));
+        });
 
-</script>
+    </script>
+}
