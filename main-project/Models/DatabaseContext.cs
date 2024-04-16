@@ -68,6 +68,7 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.HostelId).HasColumnName("hostel_id");
             entity.Property(e => e.RenterId).HasColumnName("renter_id");
             entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.LeaseContractId).HasColumnName("lease_contract_id");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
             entity.HasOne<RenterProfile>(c => c.RenterProfile)

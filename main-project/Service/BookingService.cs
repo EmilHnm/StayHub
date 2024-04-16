@@ -209,7 +209,8 @@ public class BookingService
             };
             DatabaseContext db = new DatabaseContext();
             db.leaseContracts.Add(contract);
-            db.bookings.Remove(booking);
+            booking.LeaseContractId = contract.Id;
+            db.bookings.Update(booking);
             db.SaveChanges();
             return contract;
         }

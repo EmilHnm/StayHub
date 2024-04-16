@@ -117,17 +117,19 @@
         @foreach (var hostel in latestHostels)
         {
             <div
-                class="rounded-lg overflow-hidden border border-neutral-200/60 bg-white text-neutral-700 shadow-sm w-[380px]">
+                class="flex flex-col rounded-lg overflow-hidden border border-neutral-200/60 bg-white text-neutral-700 shadow-sm w-[380px]">
                 <div class="relative">
                     <img src='@(hostel.HostelImages?.Count() > 0 ? hostel.HostelImages.First().ImageUrl : "https://nhatro.duytan.edu.vn/Content/Home/images/image_logo.jpg")'
                         class="w-full max-h-40 min-h-40 object-contain" />
                 </div>
-                <div class="p-7">
-                    <h3
-                        class="mb-2 text-xl font-bold leading-none tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
-                        @hostel.Name</h3>
-                    <p class="mb-2 text-neutral-500">@hostel.Address</p>
-                    <p class="mb-5 text-lg font-bold text-purple-500">@(String.Format("{0:#,##0.##}", @hostel.Fee)) VNĐ</p>
+                <div class="flex flex-col flex-1 p-7">
+                    <div class="flex-1">
+                        <h3
+                            class="mb-2 text-xl font-bold leading-none tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                            @hostel.Name</h3>
+                        <p class="mb-2 text-neutral-500">@hostel.Address</p>
+                        <p class="mb-5 text-lg font-bold text-purple-500">@(String.Format("{0:#,##0.##}", @hostel.Fee)) VNĐ</p>
+                    </div>
                     <a asp-area="" asp-controller="Hostel" asp-action="Details" asp-route-id="@hostel.Id"
                         class="inline-flex items-center justify-center w-full h-10 px-4 py-2 text-sm font-medium text-white transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-neutral-950 hover:bg-neutral-950/90 cursor-pointer">Xem
                         Chi tiết</a>
